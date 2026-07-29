@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="google" content="notranslate">
+  <title>Finanças Quest</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0F172A">
+
+  <!-- Ícones Profissionais de App -->
+  <link rel="apple-touch-icon" sizes="512x512" href="public/icon-512.png?v=3">
+  <link rel="apple-touch-icon" sizes="192x192" href="public/icon-192.png?v=3">
+  <link rel="apple-touch-icon" sizes="180x180" href="public/apple-touch-icon.png?v=3">
+  <link rel="icon" type="image/png" sizes="512x512" href="public/icon-512.png?v=3">
+  <link rel="icon" type="image/png" sizes="192x192" href="public/icon-192.png?v=3">
+  <link rel="shortcut icon" href="public/icon-192.png?v=3">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="public/manifest.json?v=3">
+
+  <!-- Fontes & Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Confete e Gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0B0F17;
+      --card-bg: #151C2C;
+      --card-border: #232D42;
+      --text: #F3F4F6;
+      --text-muted: #9CA3AF;
+      
+      --accent-green: #10B981;
+      --accent-orange: #F59E0B;
+      --accent-purple: #8B5CF6;
+      --accent-blue: #3B82F6;
+      --accent-gold: #EAB308;
+      --accent-red: #EF4444;
+    }
+
+    body.light-theme {
+      --bg: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --card-border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      overflow-y: auto;
+      overscroll-behavior-y: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 4px 8px;
+      padding-top: max(12px, calc(8px + env(safe-area-inset-top, 0px)));
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      overscroll-behavior-y: none;
+    }
+
+    @media all and (display-mode: standalone) {
+      body {
+        padding-top: max(28px, calc(env(safe-area-inset-top, 0px) + 8px));
+      }
+    }
+
+    @supports (padding: max(0px)) {
+      body {
+        padding-top: max(12px, env(safe-area-inset-top));
+      }
+    }
+
+    /* LOGOTIPO DE MARKETING PROFISSIONAL COMPACTO */
+    .app-brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--card-bg) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border: 1px solid var(--card-border);
+      padding: 4px 12px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      height: 46.7557px;
+      box-sizing: border-box;
+    }
+
+    .brand-logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFF;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+      overflow: hidden;
+    }
+
+    .brand-texts {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #FFF, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    body.light-theme .brand-title {
+      background: linear-gradient(90deg, var(--text), var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* BARRA SUPERIOR */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 4px 8px;
+      border-radius: 10px;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .date-nav-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg);
+      padding: 3px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      position: relative;
+      flex-shrink: 0;
+      white-space: nowrap;
+      height: 35.6406px;
+      box-sizing: border-box;
+    }
+
+    .date-filter span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      pointer-events: none;
+    }
+
+    .date-filter input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex-shrink: 1;
+      justify-content: flex-end;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--bg);
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 35.6406px;
+      box-sizing: border-box;
+    }
+
+    .icon-btn {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 4px 6px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1;
+      flex-shrink: 1;
+      min-width: 0;
+      min-height: 34px;
+      box-sizing: border-box;
+    }
+
+    .icon-btn i {
+      font-size: 0.88rem;
+    }
+
+    .icon-btn span {
+      display: block;
+      font-size: 0.66rem;
+      white-space: normal;
+      word-break: break-word;
+      max-width: 50px;
+    }
+
+    /* GRID EM 2 COLUNAS OTIMIZADA PARA CABER TUDO */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .block-fixas {
+      grid-column: span 2;
+    }
+
+    .block-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      min-width: 0;
+    }
+
+    .card-cartao-individual {
+      padding: 4px 8px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 2px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* MODO PRIVACIDADE: borra os valores monetários da tela */
+    body.privacidade-ativa .card-value,
+    body.privacidade-ativa .compact-item,
+    body.privacidade-ativa .history-item,
+    body.privacidade-ativa #resumoDespesasFalta,
+    body.privacidade-ativa #resumoDespesasPago,
+    body.privacidade-ativa #valorReceitasPendentesResumo,
+    body.privacidade-ativa #totalFixasPago,
+    body.privacidade-ativa #totalFixasFalta {
+      filter: blur(6px);
+      user-select: none;
+      transition: filter 0.15s ease;
+    }
+
+    .card-actions-double {
+      display: flex;
+      gap: 4px;
+    }
+
+    .card-action-btn {
+      width: 100%;
+      padding: 6px;
+      border-radius: 5px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-transform: uppercase;
+    }
+
+    .btn-green { background: var(--accent-green); color: #000; }
+    .btn-orange { background: var(--accent-orange); color: #000; }
+    .btn-purple { background: var(--accent-purple); color: #FFF; }
+    .btn-blue { background: var(--accent-blue); color: #FFF; }
+    .btn-gold { background: var(--accent-gold); color: #000; }
+    .btn-red { background: var(--accent-red); color: #FFF; }
+    .btn-outline { background: transparent; border: 1px solid var(--card-border); color: var(--text); }
+
+    .progress-bar-bg {
+      background: var(--bg);
+      height: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 2px;
+      border: 1px solid var(--card-border);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-orange);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .compact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      max-height: 75px;
+      overflow-y: auto;
+      margin: 3px 0;
+      transition: max-height 0.3s ease;
+    }
+
+    .compact-list.collapsed {
+      max-height: 0;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .compact-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+      padding: 4px 6px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .compact-item.paid {
+      opacity: 0.45;
+      text-decoration: line-through;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .mini-btn-box {
+      background: var(--bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mini-btn-pay {
+      background: var(--accent-purple);
+      color: white;
+      border: none;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* CONTAINER DE CARTÕES COM ROLAGEM LIMITADA */
+    #containerCartoes {
+      grid-column: span 2;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 150px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 2px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--card-border) transparent;
+    }
+
+    #containerCartoes::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #containerCartoes::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 2px;
+    }
+
+    /* BARRINHA DE RESUMO GERAL INFERIOR COMPACTA */
+    .global-summary-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    .global-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* MENU LATERAL */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 1100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .sidebar {
+      position: fixed;
+      top: 0; right: 0;
+      width: 280px;
+      height: 100%;
+      background: var(--card-bg);
+      border-left: 1px solid var(--card-border);
+      z-index: 1200;
+      padding: 14px;
+      padding-top: calc(14px + env(safe-area-inset-top, 0px));
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+    }
+
+    .sidebar.active { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 6px;
+    }
+
+    .sidebar-menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px;
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px 10px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      width: 100%;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .modal-card h3 { font-size: 0.88rem; color: var(--text); text-align: center; }
+
+    input, select {
+      width: 100%;
+      padding: 7px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.75rem;
+      outline: none;
+    }
+
+    .modal-actions { display: flex; gap: 6px; margin-top: 4px; }
+    .modal-actions button { flex: 1; padding: 7px; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; font-size: 0.75rem; }
+    .btn-cancel { background: #374151; color: white; }
+
+    .history-list {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+      padding: 5px;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 12px;
+      right: 12px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .toast {
+      background: var(--card-bg);
+      border: 1px solid var(--accent-green);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* COPYRIGHT FOOTER COMPACTO */
+    .app-footer-copy {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+    }
+
+    /* AJUSTE PARA TELAS DE PC/DESKTOP */
+    @media (min-width: 700px) {
+      body {
+        max-width: 1000px;
+        padding: 20px 28px;
+        gap: 14px;
+      }
+
+      .app-brand-header { padding: 10px 20px; }
+      .brand-logo-icon { width: 48px; height: 48px; font-size: 1.5rem; border-radius: 12px; }
+      .brand-title { font-size: 1.6rem; }
+      .brand-subtitle { font-size: 0.85rem; letter-spacing: 1.5px; }
+
+      .top-bar { padding: 10px 16px; }
+      .date-filter { padding: 8px 14px; }
+      .date-filter span { font-size: 1.05rem; }
+      .date-filter i { font-size: 1rem !important; }
+      .icon-btn { padding: 9px 14px; font-size: 0.85rem; }
+      .icon-btn i { font-size: 1.15rem; }
+      .icon-btn span { font-size: 0.75rem; max-width: none; }
+      .stat-pill { font-size: 1rem; padding: 8px 14px; }
+      .stat-pill i { font-size: 0.95rem !important; }
+
+      .dashboard-grid { gap: 16px; }
+      .block-card { padding: 18px 20px; border-radius: 14px; }
+      .card-title { font-size: 1rem; }
+      .card-title i { font-size: 1rem; }
+      .card-value { font-size: 2rem; margin: 6px 0; }
+      .card-action-btn { font-size: 0.95rem; padding: 12px; border-radius: 8px; }
+
+      .compact-list { max-height: 170px; gap: 6px; }
+      .compact-item { font-size: 0.95rem; padding: 9px 12px; border-radius: 8px; }
+      .mini-btn-box, .mini-btn-pay { font-size: 0.8rem; padding: 5px 10px; }
+
+      #containerCartoes { max-height: 320px; gap: 12px; }
+
+      .global-summary-bar { padding: 12px 16px; }
+      .global-summary-row { font-size: 0.9rem; }
+
+      .sidebar { width: 360px; padding: 20px; }
+      .sidebar-menu-btn { font-size: 0.95rem; padding: 12px; }
+      .sidebar-header h3 { font-size: 1.1rem; }
+
+      .modal-card { max-width: 460px; padding: 20px; }
+      .modal-card h3 { font-size: 1.15rem; }
+      input, select { font-size: 0.95rem; padding: 11px; }
+      .modal-actions button { font-size: 0.9rem; padding: 10px; }
+
+      .app-footer-copy { font-size: 0.8rem; padding: 10px 0; }
+    }
+
+    @media (min-width: 1100px) {
+      body { max-width: 1100px; padding: 28px 36px; }
+      .card-value { font-size: 2.2rem; }
+      .block-card { padding: 22px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGOTIPO ESTILIZADO DE MARKETING -->
+  <div class="app-brand-header">
+    <div class="brand-logo-icon">
+      <img src="public/icon-192.png?v=3" alt="Finanças Quest Icon" 
+           style="width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;"
+           onerror="this.onerror=null;this.src='public/app-icon.png?v=3';" />
+    </div>
+    <div class="brand-texts">
+      <span class="brand-title notranslate">Finanças Quest</span>
+      <span class="brand-subtitle">Gestão Patrimonial Inteligente</span>
+    </div>
+  </div>
+
+  <!-- BARRA SUPERIOR -->
+  <div class="top-bar">
+    <div class="date-nav-wrapper">
+      <button class="icon-btn" onclick="window.mudarMes(-1)" title="Mês Anterior" style="padding: 5px 5px; min-width: auto;">
+        <i class="fa-solid fa-chevron-left" style="font-size: 0.85rem;"></i>
+      </button>
+
+      <div class="date-filter">
+        <i class="fa-regular fa-calendar-days" style="color: var(--accent-blue); font-size: 0.82rem;"></i>
+        <span id="filtroDataLabel">Jul/2026</span>
+        <input type="month" id="filtroData" onchange="window.atualizarTela(); window.atualizarLabelData();">
+      </div>
+
+      <button class="icon-btn" onclick="window.mudarMes(1)" title="Próximo Mês" style="padding: 5px 5px; min-width: auto;">
+        <i class="fa-solid fa-chevron-right" style="font-size: 0.85rem;"></i>
+      </button>
+    </div>
+
+    <div class="top-actions">
+      <button class="icon-btn" onclick="window.togglePrivacidade()" id="btnPrivacidade" title="Ocultar/Mostrar valores">
+        <i class="fa-solid fa-eye" id="iconePrivacidade" style="color: var(--text);"></i>
+        <span>Ocultar</span>
+      </button>
+
+      <div class="stat-pill" onclick="window.explicarGamificacao()" title="Sua Pontuação de Economia">
+        <i class="fa-solid fa-star" style="color: var(--accent-gold); font-size: 0.82rem;"></i>
+        <span id="starsCount">5</span>
+      </div>
+
+      <button class="icon-btn" onclick="window.toggleSidebar()" title="Menu Avançado">
+        <i class="fa-solid fa-bars" style="color: var(--text);"></i>
+        <span>Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD GRID -->
+  <div class="dashboard-grid" id="dashboardGrid">
+
+    <!-- 1. BLOCO RECEBIDOS / SALDO -->
+    <div class="block-card">
+      <div class="card-title">
+        <span id="labelBlocoRecebidos" style="font-size:0.72rem;">Saldo Disponível</span>
+        <div>
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--text-muted); cursor: pointer; margin-right: 3px;" onclick="window.verHistorico('recebidos')" title="Ver histórico"></i>
+          <i class="fa-solid fa-wallet" style="color: var(--accent-green);"></i>
+        </div>
+      </div>
+      <div class="card-value" style="color: var(--accent-green); margin: 0;" id="displayRecebidos">R$ 0,00</div>
+      <button class="card-action-btn btn-green" style="margin-top:2px;" onclick="window.abrirModalEntrada()">
+        <i class="fa-solid fa-plus"></i> Adicionar
+      </button>
+      <div id="linhaReceitasPendentes" onclick="window.abrirModalAReceber()" style="cursor:pointer; margin-top:4px; font-size:0.66rem; color:var(--text-muted); display:flex; justify-content:space-between; border-top:1px solid var(--card-border); padding-top:3px;">
+        <span>Receitas Pendentes</span>
+        <strong style="color:var(--accent-green);" id="valorReceitasPendentesResumo">R$ 0,00</strong>
+      </div>
+    </div>
+
+    <!-- 2. BLOCO DESPESAS DIVERSAS -->
+    <div class="block-card" id="blocoDiversosWrapper">
+      <div class="card-title">
+        <span id="labelBlocoDiversos">Despesas Diversas</span>
+        <div>
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--text-muted); cursor: pointer; margin-right: 3px;" onclick="window.verHistorico('diversos')" title="Ver histórico"></i>
+          <i class="fa-solid fa-cart-shopping" style="color: var(--accent-orange);"></i>
+        </div>
+      </div>
+      <div class="card-value" style="color: var(--accent-orange);" id="displayDiversos">R$ 0,00</div>
+      <div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); display:flex; justify-content: space-between; margin-bottom: 1px;">
+          <span>Meta: <strong id="lblMetaDiversos" style="color:#FFF">R$ 200</strong></span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="barDiversos"></div></div>
+        <button class="card-action-btn btn-orange" onclick="window.abrirModalGasto()">
+          <i class="fa-solid fa-minus"></i> Gastar
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. BLOCO DESPESAS FIXAS -->
+    <div class="block-card block-fixas" id="blocoFixasWrapper">
+      <div class="card-title" onclick="window.toggleColocarFixas()" style="cursor: pointer;">
+        <div>
+          <span id="labelBlocoFixas">Despesas Fixas</span>
+          <i class="fa-solid fa-chevron-down" id="iconToggleFixas" style="font-size: 0.7rem; margin-left: 3px;"></i>
+        </div>
+        <i class="fa-solid fa-plus-circle" style="color: var(--accent-purple); cursor: pointer;" onclick="event.stopPropagation(); window.abrirModalNovaDespesaFixa()" title="Nova Conta"></i>
+      </div>
+      
+      <div class="compact-list" id="listaFixas"></div>
+
+      <div style="font-size: 0.76rem; color: var(--text-muted); display: flex; justify-content: space-between; border-top: 1px solid var(--card-border); padding-top: 3px;">
+        <span>Pago: <strong id="totalFixasPago" style="color: var(--accent-green);">R$ 0,00</strong></span>
+        <span>Falta: <strong id="totalFixasFalta" style="color: var(--accent-red);">R$ 0,00</strong></span>
+      </div>
+    </div>
+
+    <!-- BLOCOS DE CARTÕES DE CRÉDITO DINÂMICOS -->
+    <div id="containerCartoes"></div>
+
+    <!-- 4. BLOCO INVESTIMENTOS -->
+    <div class="block-card" id="blocoInvestimentoWrapper">
+      <div class="card-title">
+        <span id="labelBlocoInvestido">Investidos</span>
+        <div>
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--text-muted); cursor: pointer; margin-right: 3px;" onclick="window.verHistorico('investido')" title="Ver histórico"></i>
+          <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i>
+        </div>
+      </div>
+      <div class="card-value" style="color: var(--accent-blue);" id="displayInvestido">R$ 0,00</div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">Meta: <span id="lblMetaInvestimento" style="color:#FFF">R$ 500</span></div>
+      <div class="card-actions-double">
+        <button class="card-action-btn btn-blue" onclick="window.abrirModalInvestimento()">
+          <i class="fa-solid fa-piggy-bank"></i> Investir
+        </button>
+        <button class="card-action-btn btn-outline" onclick="window.abrirModalResgateInvestimento()" title="Resgatar">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. BLOCO RESERVA DE EMERGÊNCIA (COFRE) -->
+    <div class="block-card" id="blocoReservaWrapper">
+      <div class="card-title">
+        <div>
+          <span id="labelBlocoCofre">Reserva de Emergência</span>
+          <i class="fa-solid fa-circle-question" style="color: var(--accent-gold); cursor: pointer; margin-left: 2px;" onclick="window.explicarReserva()" title="Explicar Reserva"></i>
+        </div>
+        <div>
+          <i class="fa-solid fa-clock-rotate-left" style="color: var(--text-muted); cursor: pointer; margin-right: 3px;" onclick="window.verHistorico('cofre')" title="Ver histórico"></i>
+          <i class="fa-solid fa-vault" style="color: var(--accent-gold);"></i>
+        </div>
+      </div>
+      <div class="card-value" style="color: var(--accent-gold);" id="displayCofre">R$ 0,00</div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 2px;">Meta (<span id="lblMesesReservaMeta">6</span>m): <span id="lblMetaCofre" style="color:#FFF">R$ 0</span></div>
+      <div class="card-actions-double">
+        <button class="card-action-btn btn-gold" onclick="window.abrirModalCofre()">
+          <i class="fa-solid fa-lock"></i> Guardar
+        </button>
+        <button class="card-action-btn btn-outline" onclick="window.abrirModalResgateCofre()" title="Resgatar">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BARRINHA DE RESUMO GERAL INFERIOR -->
+  <div class="global-summary-bar" style="padding: 5px 8px;">
+    <div class="global-summary-row">
+      <span>Despesas: Falta <strong id="resumoDespesasFalta" style="color:var(--accent-red)">R$ 0.00</strong> | Pago <strong id="resumoDespesasPago" style="color:var(--accent-green)">R$ 0.00</strong></span>
+    </div>
+  </div>
+
+  <!-- MENU LATERAL (SIDEBAR) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="window.toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>⚙️ Menu Avançado</h3>
+      <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="window.toggleSidebar()"></i>
+    </div>
+
+    <!-- GOOGLE AUTH LOGIN SECTION -->
+    <div id="authContainer" style="background: var(--bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; gap: 5px;">
+      <div id="userInfo" style="font-size: 0.7rem; color: var(--accent-green); text-align: center; display: none; font-weight: 700;"></div>
+      <button class="sidebar-menu-btn" id="authBtn" onclick="window.toggleGoogleAuth()" style="background: rgba(59, 130, 246, 0.15); border-color: var(--accent-blue); color: var(--accent-blue);">
+        <i class="fa-brands fa-google"></i> <span id="authBtnText">Entrar com Google</span>
+      </button>
+    </div>
+
+    <button class="sidebar-menu-btn" onclick="window.alternarTema()">
+      <i class="fa-solid fa-circle-half-stroke" style="color: var(--accent-gold);"></i> <span id="lblTema">Tema Claro</span>
+    </button>
+
+    <div class="sidebar-section-title">Módulos & Ajustes</div>
+    
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalGerenciarCartoes();">
+      <i class="fa-solid fa-credit-card" style="color: var(--accent-purple);"></i> Gerenciar Cartões de Crédito
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalModulos();">
+      <i class="fa-solid fa-toggle-on" style="color: var(--accent-green);"></i> Ativar / Desativar Módulos
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalGerenciarCategorias();">
+      <i class="fa-solid fa-tags" style="color: var(--accent-orange);"></i> Categorias
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalGraficos();">
+      <i class="fa-solid fa-chart-line" style="color: var(--accent-blue);"></i> Gráficos
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalEditarBlocos();">
+      <i class="fa-solid fa-pen-to-square" style="color: var(--accent-purple);"></i> Editar Nomes dos Blocos
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalMetas();">
+      <i class="fa-solid fa-bullseye" style="color: var(--accent-blue);"></i> Configurar Metas
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalEditarSaldos();">
+      <i class="fa-solid fa-sliders" style="color: var(--accent-gold);"></i> Editar Saldos Gerais
+    </button>
+
+    <div class="sidebar-section-title">Sistema & Dados</div>
+
+    <button class="sidebar-menu-btn" onclick="window.exportarDadosCSV();">
+      <i class="fa-solid fa-download" style="color: var(--accent-green);"></i> Exportar Backup (CSV)
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="document.getElementById('importFile').click();">
+      <i class="fa-solid fa-upload" style="color: var(--accent-purple);"></i> Importar Backup (CSV)
+    </button>
+    <input type="file" id="importFile" style="display:none" accept=".csv, text/csv, text/plain, application/vnd.ms-excel" onchange="window.importarDadosCSV(event)">
+
+    <button class="sidebar-menu-btn" onclick="window.toggleSidebar(); window.abrirModalSobreProjeto();">
+      <i class="fa-solid fa-circle-info" style="color: var(--accent-blue);"></i> Sobre o Projeto
+    </button>
+
+    <button class="sidebar-menu-btn" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSc31kUQUo_w79qWDTlp9j2YA4R56cLVBT0_l_4JFc4YQrhIKA/viewform?usp=header', '_blank');">
+      <i class="fa-solid fa-headset" style="color: var(--accent-orange);"></i> Fale conosco / Reportar Erro
+    </button>
+
+    <div style="margin-top: auto; padding-top: 10px;">
+      <button class="sidebar-menu-btn" style="background: rgba(239, 68, 68, 0.15); border-color: var(--accent-red); color: var(--accent-red);" onclick="window.resetarTudo()">
+        <i class="fa-solid fa-trash-can"></i> Resetar Todos os Dados
+      </button>
+    </div>
+  </div>
+
+  <!-- COPYRIGHT FOOTER -->
+  <div class="app-footer-copy">
+    © 2026 Finanças Quest. Todos os direitos reservados.
+  </div>
+
+  <!-- MODAL GENÉRICO -->
+  <div class="modal-overlay" id="modalGeral">
+    <div class="modal-card">
+      <h3 id="modalTitulo">Ação</h3>
+      <div id="modalConteudo"></div>
+      <div class="modal-actions" id="modalActions">
+        <button class="btn-cancel" onclick="window.fecharModal()">Cancelar</button>
+        <button class="btn-green" id="btnSalvarModal">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
